@@ -4,7 +4,7 @@ from firebase_admin import firestore
 from bs4 import BeautifulSoup
 import requests
 
-cred = credentials.Certificate("mercari-bot-337508-ed622aca8fd4.json")
+cred = credentials.Certificate("mercari-bot-337508-0a00be491377.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 collection_ref = db.collection("searches")
@@ -31,3 +31,4 @@ def retrieve_listings(url):
 
     return listings
 
+print(len(retrieve_listings("https://www.mercari.com/search/?brandIds=319&customFacets%5BModel%5D=AirPods%20Pro&itemConditions=1-2&itemStatuses=1&keyword=airpods&maxPrice=10000&minPrice=5000&searchId=249995205&sortBy=2")))

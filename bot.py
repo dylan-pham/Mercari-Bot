@@ -9,16 +9,18 @@ import time
 
 headers = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"
 
-cred = credentials.Certificate("mercari-bot-337508-ed622aca8fd4.json")
+cred = credentials.Certificate("mercari-bot-337508-0a00be491377.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 collection_ref = db.collection("searches")
 
 account_sid = os.environ['TWILIO_ACCOUNT_SID']
 twilio_phone_number = os.environ['TWILIO_PHONE_NUMBER']
-my_phone_number = os.enivron['MY_PHONE_NUMBER']
+my_phone_number = os.environ['MY_PHONE_NUMBER']
 auth_token = os.environ['TWILIO_AUTH_TOKEN']
 client = Client(account_sid, auth_token)
+
+headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"}
 
 def send_sms_notif(product_details):
     title = product_details[0]
@@ -35,7 +37,7 @@ def send_sms_notif(product_details):
 
     print(message.sid)
 
-def get_new_listings(url, old_listings):
+def get_new_listings(doc):
     soup = BeautifulSoup(requests.get(doc.get("url"), headers=headers).text, "html.parser")
 
     search_results = soup.find("div", {"data-testid" : "SearchResults"}).find("div").find("div").find_all("div", recursive=False)
@@ -54,7 +56,7 @@ def get_new_listings(url, old_listings):
     # updating database with most recent set of listings
     collection_ref.document(doc.id).update({"listings": current_listings})
 
-    new_listings = current_listings - old_listings
+    new_listings = current_listings - set(doc.get("listings"))
     return new_listings, product_details
 
 def notif_new_listings(new_listings, product_details):
@@ -62,14 +64,14 @@ def notif_new_listings(new_listings, product_details):
         send_sms_notif(product_details[product_id])
 
 def main():
-    print("ran")
-
     for doc in collection_ref.stream():
-        new_listings, product_details = get_new_listings(doc.get("url"), doc.get("listings"))
+        new_listings, product_details = get_new_listings(doc)
         notif_new_listings(new_listings, product_details)
+
+    print("ran")
 
 while True:
     main()
 
-    # check for new listings every 15 minutes
-    time.sleep(900)
+    # check for new listings every half hour
+    time.sleep(1800)
