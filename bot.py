@@ -41,7 +41,7 @@ def get_new_listings(doc):
     # browser = webdriver.Firefox(options=opts)
 
     browser = webdriver.Safari()
-    browser.get(doc.url)
+    browser.get(doc.get("url"))
     time.sleep(3)
 
     soup = BeautifulSoup(browser.page_source, "html.parser")
