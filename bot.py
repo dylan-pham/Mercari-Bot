@@ -7,6 +7,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import time
 from selenium import webdriver
+from selenium.webdriver import FirefoxOptions
 
 cred = credentials.Certificate("mercari-bot-337508-0a00be491377.json")
 firebase_admin.initialize_app(cred)
@@ -35,8 +36,12 @@ def send_sms_notif(product_details):
          )
 
 def get_new_listings(doc):
+    # opts = FirefoxOptions()
+    # opts.add_argument("--headless")
+    # browser = webdriver.Firefox(options=opts)
+
     browser = webdriver.Safari()
-    browser.get("https://www.mercari.com/search/?keyword=iphone")
+    browser.get(doc.url)
     time.sleep(3)
 
     soup = BeautifulSoup(browser.page_source, "html.parser")
