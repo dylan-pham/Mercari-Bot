@@ -72,7 +72,7 @@ def main():
     for doc in collection_ref.stream():
         new_listings, product_details = get_new_listings(doc)
         print(new_listings)
-        # notif_new_listings(new_listings, product_details)
+        notif_new_listings(new_listings, product_details)
 
     print("ran")
 
